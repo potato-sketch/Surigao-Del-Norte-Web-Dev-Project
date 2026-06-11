@@ -21,12 +21,15 @@
   vite --version
   
 **3. Install Project Dependencies**
+  
   npm install
   
 **4. Install Three.js**
+  
   npm install three
   
 **5. Run the Development Server**
+  
   npm run dev
 
 Open the Local URL in your browser.
