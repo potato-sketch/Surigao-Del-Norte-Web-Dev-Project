@@ -9,6 +9,7 @@
   After installation, verify:
   
   node -v
+  
   npm -v
   
 **2. Install Vite**
