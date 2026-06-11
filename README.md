@@ -1,5 +1,5 @@
-**Installation Guide**
-1. Install Node.js
+****Installation Guide****
+**1. Install Node.js**
 
   Download and install Node.js from:
 
@@ -10,7 +10,7 @@
   node -v
   npm -v
   
-2. Install Vite
+**2. Install Vite**
 
   Install Vite globally:
   
@@ -20,11 +20,13 @@
   
   vite --version
   
-3. Install Project Dependencies
+**3. Install Project Dependencies**
   npm install
-4. Install Three.js
+  
+**4. Install Three.js**
   npm install three
-5. Run the Development Server
+  
+**5. Run the Development Server**
   npm run dev
 
 Open the Local URL in your browser.
