@@ -127,6 +127,7 @@ labelRenderer.domElement.style.left = "0";
 labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
+
 // ==========================
 // Variables
 // ==========================
@@ -140,6 +141,18 @@ const cameraTargetPosition = new THREE.Vector3();
 const cameraTargetLookAt = new THREE.Vector3();
 
 let movingCamera = false;
+let markerTourIndex = 0;
+
+const markerTourOrder = [
+  "CaveMarker",
+  "BeachMarker",
+  "HutMarker",
+  "MountainMarker",
+  "CoveMarker",
+  "RoadMarker",
+  "BridgeMarker",
+  "WaterfallMarker",
+];
 
 const spotDetails = {
   CaveMarker: {
@@ -202,6 +215,29 @@ const spotDetails = {
 };
 
 const hoverCard = createHoverCard();
+
+const markerTourButton = createMarkerTourButton();
+
+function createMarkerTourButton() {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "marker-tour-button";
+  button.setAttribute("aria-label", "Go to the next place marker");
+  button.title = "Go to the next place marker";
+  button.textContent = "Go";
+  button.disabled = true;
+
+  button.addEventListener("click", () => {
+    if (!loadedModel) return;
+
+    const markerName = markerTourOrder[markerTourIndex % markerTourOrder.length];
+    markerTourIndex += 1;
+    goToMarker(markerName);
+  });
+
+  document.body.appendChild(button);
+  return button;
+}
 
 function createHoverCard() {
   const card = document.createElement("div");
@@ -431,6 +467,8 @@ loader.load(
     controls.target.copy(islandCenter);
     camera.position.set(40, 0, 50);
     controls.update();
+
+    markerTourButton.disabled = false;
 
     createNumberMarker("Cave", "CaveMarker");
     createNumberMarker("Beach", "BeachMarker");
