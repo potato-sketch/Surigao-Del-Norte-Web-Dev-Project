@@ -202,16 +202,16 @@ canvas {
 
 .showcase-btn {
   left: 73%;
-  top: 54%;
-  --btn-transform: translate(-50%, -50%) scale(0.64);
-  --btn-hover-transform: translate(-50%, -50%) scale(0.68);
+  top: 57%;
+  --btn-transform: translate(-50%, -50%) scale(0.8);
+  --btn-hover-transform: translate(-50%, -50%) scale(0.84);
 }
 
 .booking-btn {
   left: 31.5%;
   top: 34%;
-  --btn-transform: translate(-50%, -50%) scale(0.66);
-  --btn-hover-transform: translate(-50%, -50%) scale(0.71);
+  --btn-transform: translate(-50%, -50%) scale(0.8);
+  --btn-hover-transform: translate(-50%, -50%) scale(0.84);
 }
 
 .scene-btn:focus-visible {
@@ -234,12 +234,12 @@ body.pre-render-active .scene-back-button {
 @media (max-width: 768px) {
   .booking-btn {
     left: 33%;
-    top: 37%;
+    top: 36%;
   }
 
   .showcase-btn {
     left: 71%;
-    top: 55%;
+    top: 58%;
   }
 }
 
