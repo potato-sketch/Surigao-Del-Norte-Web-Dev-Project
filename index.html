@@ -4,137 +4,104 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Island Tour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
     />
     <link rel="stylesheet" href="/style.css" />
   </head>
-  <body>
-
-  <!--
-  <div class="loading-screen">
-    <div class="loading-stack">
-
-      //Background
-      <video
-        class="layer bg"
-        autoplay
-        muted
-        playsinline
-        loop
-      >
-        <source src="assets/loading-bg.mp4" type="video/mp4" />
-      </video>
-
-      //Loading bar
-      <video
-        class="layer bar"
-        autoplay
-        muted
-        playsinline
-        loop
-      >
-        <source src="assets/loading-bar.mp4" type="video/mp4" />
-      </video>
-
-      //Loading text
-      <video
-        class="layer text"
-        autoplay
-        muted
-        playsinline
-        loop
-      >
-        <source src="assets/loading-txt.mp4" type="video/mp4" />
-      </video>
-
-      //Enter button
-      <button id="enterButton" class="enter-btn">
-        <img
-          src="assets/enter-default.png"
-          alt="Enter"
-          class="enter-img"
-        />
-      </button>
-    </div>
-  </div>
-    -->
-    <!--  
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Island Tour</a>
+  <body class="pre-render-active">
+    <section id="mainScene" class="main-scene" aria-label="Main scene">
+      <img
+        class="main-scene-bg"
+        src="/main_assets/background.png"
+        alt="Surigao del Norte showcase background"
+      />
+      <img
+        class="main-scene-desk"
+        src="/main_assets/desk.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <div class="main-scene-actions">
         <button
-          class="navbar-toggler"
+          id="showcase-btn"
+          class="scene-btn showcase-btn"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+          aria-label="Open 3D showcase"
         >
-          <span class="navbar-toggler-icon"></span>
+          <img
+            class="scene-btn-img normal"
+            src="/main_assets/showcase-btn.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="scene-btn-img hover"
+            src="/main_assets/showcase-btn-hover.png"
+            alt=""
+            aria-hidden="true"
+          />
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Spots</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
-            </li>
-          </ul>
-        </div>
+        <button
+          id="booking-btn"
+          class="scene-btn booking-btn"
+          type="button"
+          aria-label="Go to booking page"
+        >
+          <img
+            class="scene-btn-img normal"
+            src="/main_assets/booking-btn.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="scene-btn-img hover"
+            src="/main_assets/booking-btn-hover.png"
+            alt=""
+            aria-hidden="true"
+          />
+        </button>
       </div>
-    </nav>
+    </section>
 
-  -->
-
-    <div
-      class="modal fade"
+    <aside
       id="spotDetailsModal"
-      tabindex="-1"
+      class="spot-frame"
       aria-labelledby="spotDetailsModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="spotDetailsModalLabel"></h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <img
-              id="spotDetailsImage"
-              src=""
-              alt=""
-              class="img-fluid rounded mb-3"
-            />
-            <p id="spotDetailsDescription" class="mb-0"></p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+      <div class="spot-frame-header">
+        <h5 class="spot-frame-title" id="spotDetailsModalLabel"></h5>
+        <button
+          id="spotDetailsClose"
+          type="button"
+          class="spot-frame-close"
+          aria-label="Close"
+        >
+          ×
+        </button>
       </div>
-    </div>
+      <div class="spot-frame-body">
+        <video
+          id="spotDetailsVideo"
+          class="w-100 rounded mb-3"
+          controls
+          loop
+          playsinline
+          preload="metadata"
+        ></video>
+        <p id="spotDetailsVideoFallback" class="small text-muted mb-3"></p>
+        <p id="spotDetailsDescription" class="mb-0"></p>
+      </div>
+    </aside>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       defer
@@ -142,3 +109,4 @@
     <script type="module" src="/main.js"></script>
   </body>
 </html>
+

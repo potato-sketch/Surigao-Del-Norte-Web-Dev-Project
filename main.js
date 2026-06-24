@@ -42,6 +42,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
+renderer.domElement.classList.add("render-canvas");
 document.body.appendChild(renderer.domElement);
 
 // ==========================
@@ -125,7 +126,108 @@ labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = "0";
 labelRenderer.domElement.style.left = "0";
 labelRenderer.domElement.style.pointerEvents = "none";
+labelRenderer.domElement.classList.add("label-renderer");
 document.body.appendChild(labelRenderer.domElement);
+
+const mainScene = document.getElementById("mainScene");
+const showcaseBtn = document.getElementById("showcase-btn");
+const bookingBtn = document.getElementById("booking-btn");
+const showcaseCameraPosition = new THREE.Vector3(12, 5.5, 13);
+const showcaseCameraTarget = new THREE.Vector3(0, 0.1, 0);
+const mainSceneTransitionMs = 420;
+
+let pendingShowcaseZoom = false;
+let mainSceneHideTimer = null;
+let mainSceneShowTimer = null;
+let sceneTransitionInProgress = false;
+
+function startIslandShowcaseZoom() {
+  cameraTargetPosition.copy(showcaseCameraPosition);
+  cameraTargetLookAt.copy(showcaseCameraTarget);
+  movingCamera = true;
+}
+
+function enterShowcase() {
+  if (sceneTransitionInProgress) return;
+  sceneTransitionInProgress = true;
+
+  if (mainSceneHideTimer) {
+    clearTimeout(mainSceneHideTimer);
+    mainSceneHideTimer = null;
+  }
+
+  if (mainSceneShowTimer) {
+    clearTimeout(mainSceneShowTimer);
+    mainSceneShowTimer = null;
+  }
+
+  document.body.classList.remove("pre-render-active");
+  if (mainScene) {
+    mainScene.classList.add("is-exiting");
+
+    mainSceneHideTimer = setTimeout(() => {
+      mainScene.classList.add("is-hidden");
+      mainScene.classList.remove("is-exiting");
+      sceneTransitionInProgress = false;
+      mainSceneHideTimer = null;
+    }, mainSceneTransitionMs);
+  } else {
+    sceneTransitionInProgress = false;
+  }
+
+  if (loadedModel) {
+    startIslandShowcaseZoom();
+  } else {
+    pendingShowcaseZoom = true;
+  }
+}
+
+function returnToMainScene() {
+  if (sceneTransitionInProgress) return;
+  sceneTransitionInProgress = true;
+
+  if (mainSceneHideTimer) {
+    clearTimeout(mainSceneHideTimer);
+    mainSceneHideTimer = null;
+  }
+
+  if (mainSceneShowTimer) {
+    clearTimeout(mainSceneShowTimer);
+    mainSceneShowTimer = null;
+  }
+
+  closeSpotFrame();
+
+  if (mainScene) {
+    mainScene.classList.remove("is-hidden");
+    mainScene.classList.add("is-exiting");
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        mainScene.classList.remove("is-exiting");
+      });
+    });
+
+    mainSceneShowTimer = setTimeout(() => {
+      document.body.classList.add("pre-render-active");
+      sceneTransitionInProgress = false;
+      mainSceneShowTimer = null;
+    }, mainSceneTransitionMs);
+  } else {
+    document.body.classList.add("pre-render-active");
+    sceneTransitionInProgress = false;
+  }
+}
+
+if (showcaseBtn) {
+  showcaseBtn.addEventListener("click", enterShowcase);
+}
+
+if (bookingBtn) {
+  bookingBtn.addEventListener("click", () => {
+    window.location.href = "/landing.html";
+  });
+}
 
 
 // ==========================
@@ -154,69 +256,239 @@ const markerTourOrder = [
   "WaterfallMarker",
 ];
 
+const videoSources = {
+  cave: "/vids/hagukan%20cave/03D2F7A8-60DA-4BC1-B424-B9100738EE17.mov",
+  beach: "/vids/magpupungko%20rock%20formation/airaandmeagan_TikTokDownloader.com_c6567.mp4",
+  hut: "/vids/corregidor%20island/A7E31CC2-0684-40D4-B0A6-4D73D5C05B19.mov",
+  mountain: "/vids/red%20mountain/9FC4AD3C-9123-475A-97AE-44236B49869F.mov",
+  cove: "/vids/sohoton%20cove/AQNm3-Da0XREmmpALQDJfBs5AiD8YRLzbuaotPGGHh08jRPHqJwhqMe5pTtiUls-Ov28L3vmHSlqpLzxd84GYm9o_4_W_wgEWEzCk6OUXAsxyQ.mp4",
+  road: "/vids/coconut%20road/AQNK0diYNYFekk499X7SAmQ_sHwK5_h-WMxaAKFV0wKFZyOHRPMYM-wHtNNVmDh6o_nD0b5kxB5hdJhfD0iuvEwehTjwOm-G9pb8DLc.mp4",
+  bridge: "/vids/lumondo%20hanging%20bridge/421DE710-B395-400D-9DEF-725A71C3DE2C.mov",
+  waterfall: "/vids/togonan%20falls/33A655CC-490B-44C9-A2E2-9D9843E0F463.mov",
+};
+
 const spotDetails = {
   CaveMarker: {
-    title: "Cave",
+    title: "Hagukan Cave",
     description: "A shaded cavern with limestone formations and island lore.",
     longDescription:
       "Explore the shaded cave with dripping stalactites, cool air, and stories from the island's past.",
+    video: videoSources.cave,
     image: "https://via.placeholder.com/280x160?text=Cave",
   },
   BeachMarker: {
-    title: "Beach",
+    title: "Alegria Beach",
     description: "A sandy shoreline with calm waves and scenic views.",
     longDescription:
       "Relax on the beach with white sand, gentle surf, and wide ocean views perfect for sunset walks.",
+    video: videoSources.beach,
     image: "https://via.placeholder.com/280x160?text=Beach",
   },
   HutMarker: {
-    title: "Hut",
+    title: "Corregidor Island",
     description:
       "Traditional island huts with local materials and panoramic outlooks.",
     longDescription:
       "Visit the rustic island hut area, where authentic architecture and welcoming charm meet.",
+    video: videoSources.hut,
     image: "https://via.placeholder.com/280x160?text=Hut",
   },
   MountainMarker: {
-    title: "Mountain",
+    title: "Red Mountain",
     description: "A rocky summit offering sweeping views of the island.",
     longDescription:
       "Hike the mountain trail for expansive vistas, rocky ridges, and a fresh breeze at the top.",
+    video: videoSources.mountain,
     image: "https://via.placeholder.com/280x160?text=Mountain",
   },
   CoveMarker: {
-    title: "Cove",
+    title: "Sotohon Cove",
     description: "A quiet cove sheltered by cliffs and calm water.",
     longDescription:
       "Discover the secluded cove, a peaceful spot tucked between cliffs with gentle water and shade.",
+    video: videoSources.cove,
     image: "https://via.placeholder.com/280x160?text=Cove",
   },
   RoadMarker: {
-    title: "Road",
+    title: "Coconut Road",
     description: "A scenic path winding through the island's landscape.",
     longDescription:
       "Follow the island road through lush terrain and scenic viewpoints for a relaxing walk.",
+    video: videoSources.road,
     image: "https://via.placeholder.com/280x160?text=Road",
   },
   BridgeMarker: {
-    title: "Bridge",
+    title: "Lumondo Hanging Bridge",
     description: "A wooden bridge crossing the island's stream.",
     longDescription:
       "Cross the wooden bridge and take in the sounds of flowing water and greenery all around.",
+    video: videoSources.bridge,
     image: "https://via.placeholder.com/280x160?text=Bridge",
   },
   WaterfallMarker: {
-    title: "Waterfall",
+    title: "Togonan Falls",
     description: "A cascading waterfall with misty pools below.",
     longDescription:
       "Enjoy the waterfall's mist, mossy rocks, and the cool pool area beneath the cascade.",
+    video: videoSources.waterfall,
     image: "https://via.placeholder.com/280x160?text=Waterfall",
   },
 };
 
+const spotModalElement = document.getElementById("spotDetailsModal");
+const spotModalCloseButton = document.getElementById("spotDetailsClose");
+let activeSpotMarkerName = null;
+const goFrameTransitionMs = 180;
+let goFrameTransitionTimer = null;
+
+function positionSpotFrame(markerName) {
+  const margin = 14;
+  const frameWidth = spotModalElement.offsetWidth || Math.min(420, window.innerWidth - 32);
+  const frameHeight = spotModalElement.offsetHeight || 360;
+
+  if (markerName === "CaveMarker") {
+    spotModalElement.style.left = `${margin + 80}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "BeachMarker") {
+    spotModalElement.style.left = `${margin}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "HutMarker") {
+    spotModalElement.style.left = `${margin}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "MountainMarker") {
+    spotModalElement.style.left = `${window.innerWidth - frameWidth - margin}px`;
+    spotModalElement.style.top = `${window.innerHeight - frameHeight - margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "CoveMarker") {
+    spotModalElement.style.left = `${window.innerWidth - frameWidth - margin}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "RoadMarker") {
+    spotModalElement.style.left = `${margin}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  if (markerName === "WaterfallMarker") {
+    spotModalElement.style.left = `${margin}px`;
+    spotModalElement.style.top = `${margin}px`;
+    spotModalElement.style.right = "auto";
+    return;
+  }
+
+  let left = window.innerWidth - frameWidth - margin;
+  let top = margin;
+
+  if (loadedModel) {
+    const marker = loadedModel.getObjectByName(markerName);
+    if (marker) {
+      const markerScreenPos = marker
+        .getWorldPosition(new THREE.Vector3())
+        .project(camera);
+
+      const screenX = (markerScreenPos.x * 0.5 + 0.5) * window.innerWidth;
+      const screenY = (-markerScreenPos.y * 0.5 + 0.5) * window.innerHeight;
+
+      left = screenX < window.innerWidth * 0.55
+        ? screenX + 28
+        : screenX - frameWidth - 28;
+      top = screenY - frameHeight * 0.35;
+    }
+  }
+
+  if (markerName === "BridgeMarker") {
+    left += 240;
+  }
+
+  left = Math.min(window.innerWidth - frameWidth - margin, Math.max(margin, left));
+  top = Math.min(window.innerHeight - frameHeight - margin, Math.max(margin, top));
+
+  spotModalElement.style.left = `${left}px`;
+  spotModalElement.style.top = `${top}px`;
+  spotModalElement.style.right = "auto";
+}
+
+function autoplaySpotVideo(videoElement) {
+  videoElement.autoplay = true;
+  videoElement.muted = false;
+  const playResult = videoElement.play();
+
+  if (playResult && typeof playResult.catch === "function") {
+    playResult.catch(() => {
+      videoElement.muted = true;
+      videoElement.play().catch(() => {});
+    });
+  }
+}
+
+function closeSpotFrame() {
+  const videoElement = spotModalElement.querySelector("#spotDetailsVideo");
+  videoElement.pause();
+  videoElement.currentTime = 0;
+  activeSpotMarkerName = null;
+  if (goFrameTransitionTimer) {
+    clearTimeout(goFrameTransitionTimer);
+    goFrameTransitionTimer = null;
+  }
+  spotModalElement.classList.remove("is-open");
+  spotModalElement.setAttribute("aria-hidden", "true");
+}
+
+function showSpotModalWithTransition(markerName) {
+  const videoElement = spotModalElement.querySelector("#spotDetailsVideo");
+
+  if (!spotModalElement.classList.contains("is-open")) {
+    showSpotModal(markerName);
+    return;
+  }
+
+  if (goFrameTransitionTimer) {
+    clearTimeout(goFrameTransitionTimer);
+    goFrameTransitionTimer = null;
+  }
+
+  videoElement.pause();
+  spotModalElement.classList.remove("is-open");
+
+  goFrameTransitionTimer = setTimeout(() => {
+    showSpotModal(markerName);
+    goFrameTransitionTimer = null;
+  }, goFrameTransitionMs);
+}
+
+if (spotModalCloseButton) {
+  spotModalCloseButton.addEventListener("click", closeSpotFrame);
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && spotModalElement.classList.contains("is-open")) {
+    closeSpotFrame();
+  }
+});
+
 const hoverCard = createHoverCard();
 
 const markerTourButton = createMarkerTourButton();
+const backSceneButton = createBackSceneButton();
 
 function createMarkerTourButton() {
   const button = document.createElement("button");
@@ -233,7 +505,22 @@ function createMarkerTourButton() {
     const markerName = markerTourOrder[markerTourIndex % markerTourOrder.length];
     markerTourIndex += 1;
     goToMarker(markerName);
+    showSpotModalWithTransition(markerName);
   });
+
+  document.body.appendChild(button);
+  return button;
+}
+
+function createBackSceneButton() {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "scene-back-button";
+  button.setAttribute("aria-label", "Back to main scene");
+  button.title = "Back to Main Screen";
+  button.textContent = "← Back to Main Screen";
+
+  button.addEventListener("click", returnToMainScene);
 
   document.body.appendChild(button);
   return button;
@@ -290,15 +577,41 @@ function showSpotModal(markerName) {
   const info = spotDetails[markerName];
   if (!info) return;
 
-  const modalElement = document.getElementById("spotDetailsModal");
-  modalElement.querySelector("#spotDetailsModalLabel").textContent = info.title;
-  modalElement.querySelector("#spotDetailsImage").src = info.image;
-  modalElement.querySelector("#spotDetailsImage").alt = info.title;
-  modalElement.querySelector("#spotDetailsDescription").textContent =
+  const videoElement = spotModalElement.querySelector("#spotDetailsVideo");
+  const fallbackElement = spotModalElement.querySelector("#spotDetailsVideoFallback");
+
+  spotModalElement.querySelector("#spotDetailsModalLabel").textContent = info.title;
+
+  if (info.video) {
+    videoElement.src = info.video;
+    videoElement.poster = info.image || "";
+    videoElement.style.display = "block";
+    fallbackElement.textContent = "";
+  } else {
+    videoElement.removeAttribute("src");
+    videoElement.load();
+    videoElement.poster = info.image || "";
+    videoElement.style.display = "none";
+    fallbackElement.textContent = "No video available for this marker yet.";
+  }
+
+  spotModalElement.querySelector("#spotDetailsDescription").textContent =
     info.longDescription || info.description;
 
-  const modal = new bootstrap.Modal(modalElement);
-  modal.show();
+  activeSpotMarkerName = markerName;
+  videoElement.currentTime = 0;
+  spotModalElement.classList.add("is-open");
+  spotModalElement.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => positionSpotFrame(markerName));
+
+  if (info.video) {
+    autoplaySpotVideo(videoElement);
+    videoElement.onloadedmetadata = () => {
+      if (activeSpotMarkerName) {
+        positionSpotFrame(activeSpotMarkerName);
+      }
+    };
+  }
 }
 
 // ==========================
@@ -460,6 +773,10 @@ loader.load(
 
     console.log("MODEL LOADED");
 
+    // loading is complete: enable enter button
+    if (typeof window.__setLoadingReady === "function") window.__setLoadingReady();
+
+
     const box = new THREE.Box3().setFromObject(loadedModel);
     const center = box.getCenter(new THREE.Vector3());
     loadedModel.position.sub(center);
@@ -467,6 +784,11 @@ loader.load(
     controls.target.copy(islandCenter);
     camera.position.set(40, 0, 50);
     controls.update();
+
+    if (pendingShowcaseZoom) {
+      startIslandShowcaseZoom();
+      pendingShowcaseZoom = false;
+    }
 
     markerTourButton.disabled = false;
 
@@ -486,8 +808,19 @@ loader.load(
   undefined,
   (error) => {
     console.error(error);
+    // allow user to proceed even if model failed
+    if (typeof window.__setLoadingReady === "function") window.__setLoadingReady();
+    const loader = document.getElementById("loadingScreen");
+    if (loader) loader.setAttribute("data-state", "exiting");
   },
 );
+
+// Once the model is loaded, enable enter button and hide loader after a short delay
+// (The GLB callback sets loadedModel, so we hook into it below.)
+const __origLoaderCallback = loader.load;
+
+// Note: we don't replace loader.load; we instead rely on the GLTF success callback where we set loadedModel.
+
 
 // ==========================
 // Tourist Spot Camera
@@ -537,14 +870,38 @@ window.addEventListener("click", (event) => {
 // ==========================
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "1") goToMarker("CaveMarker");
-  if (event.key === "2") goToMarker("BeachMarker");
-  if (event.key === "3") goToMarker("HutMarker");
-  if (event.key === "4") goToMarker("MountainMarker");
-  if (event.key === "5") goToMarker("CoveMarker");
-  if (event.key === "6") goToMarker("RoadMarker");
-  if (event.key === "7") goToMarker("BridgeMarker");
-  if (event.key === "8") goToMarker("WaterfallMarker");
+  if (event.key === "1") {
+    goToMarker("CaveMarker");
+    showSpotModalWithTransition("CaveMarker");
+  }
+  if (event.key === "2") {
+    goToMarker("BeachMarker");
+    showSpotModalWithTransition("BeachMarker");
+  }
+  if (event.key === "3") {
+    goToMarker("HutMarker");
+    showSpotModalWithTransition("HutMarker");
+  }
+  if (event.key === "4") {
+    goToMarker("MountainMarker");
+    showSpotModalWithTransition("MountainMarker");
+  }
+  if (event.key === "5") {
+    goToMarker("CoveMarker");
+    showSpotModalWithTransition("CoveMarker");
+  }
+  if (event.key === "6") {
+    goToMarker("RoadMarker");
+    showSpotModalWithTransition("RoadMarker");
+  }
+  if (event.key === "7") {
+    goToMarker("BridgeMarker");
+    showSpotModalWithTransition("BridgeMarker");
+  }
+  if (event.key === "8") {
+    goToMarker("WaterfallMarker");
+    showSpotModalWithTransition("WaterfallMarker");
+  }
 });
 
 // ==========================
@@ -590,4 +947,8 @@ window.addEventListener("resize", () => {
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
+
+  if (activeSpotMarkerName && spotModalElement.classList.contains("is-open")) {
+    positionSpotFrame(activeSpotMarkerName);
+  }
 });

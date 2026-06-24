@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>NatureTrails 🗺️ Tours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tours.css" />
+  </head>
+  <body>
+    <nav>
+      <a
+        href="landing.html"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: var(--cream);
+          border: none;
+          outline: 3px solid var(--brown);
+          box-shadow: 3px 3px 0 var(--brown);
+          font-family: var(--px);
+          font-size: 0.42rem;
+          color: var(--ink);
+          cursor: pointer;
+          letter-spacing: 0.05em;
+          text-decoration: none;
+          transition:
+            transform 0.1s,
+            box-shadow 0.1s;
+        "
+        onmouseover="
+          this.style.transform = 'translate(-2px,-2px)';
+          this.style.boxShadow = '5px 5px 0 var(--brown)';
+        "
+        onmouseout="
+          this.style.transform = '';
+          this.style.boxShadow = '3px 3px 0 var(--brown)';
+        "
+        >BACK</a
+      >
+      <div class="nav-brand">NATURE<span>TRAILS</span></div>
+      <a
+        href="my-adventures.html"
+        id="myQuestsBtn"
+        style="
+          padding: 6px 12px;
+          background: var(--yellow);
+          border: none;
+          outline: 3px solid var(--brown);
+          box-shadow: 3px 3px 0 var(--brown);
+          font-family: var(--px);
+          font-size: 0.38rem;
+          color: var(--ink);
+          cursor: pointer;
+          letter-spacing: 0.05em;
+          text-decoration: none;
+          transition: transform 0.1s;
+        "
+        >MY QUESTS</a
+      >
+      <button
+        id="signOutBtn"
+        style="
+          padding: 6px 12px;
+          background: #7a5230;
+          border: none;
+          outline: 3px solid #3a1a08;
+          box-shadow: 3px 3px 0 #3a1a08;
+          font-family: var(--px);
+          font-size: 0.38rem;
+          color: #fff;
+          cursor: pointer;
+          letter-spacing: 0.05em;
+          transition: transform 0.1s;
+        "
+        onmouseover="this.style.transform='translate(-2px,-2px)'; this.style.boxShadow='5px 5px 0 #3a1a08';"
+        onmouseout="this.style.transform=''; this.style.boxShadow='3px 3px 0 #3a1a08';"
+        onclick="signOut()"
+      >
+        SIGN OUT
+      </button>
+    </nav>
+
+    <div class="px-strip"></div>
+
+    <div class="controls">
+      <div
+        style="
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <div class="search-box">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            id="searchInput"
+            placeholder="SEARCH QUESTS..."
+            oninput="renderAll()"
+          />
+        </div>
+      </div>
+      <div class="cats" id="catRow"></div>
+      <div class="result-count" id="resultCount"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="modal-bd" id="bookBd" onclick="handleBd(event, 'bookBd')">
+      <div class="modal" id="bookModal">
+        <div class="modal-prog">
+          <div class="modal-prog-fill" id="bookProg" style="width: 25%"></div>
+        </div>
+        <div class="modal-hdr" id="bookHdr">
+          <div class="modal-hdr-l">
+            <button class="icon-btn hidden" id="backBtn" onclick="prevStep()">
+              ←
+            </button>
+            <div>
+              <div class="modal-step-lbl" id="stepLbl">STEP 1/3</div>
+              <div class="modal-step-ttl" id="stepTtl">TOUR INFO</div>
+            </div>
+          </div>
+          <button class="icon-btn" onclick="closeModal('bookBd')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="step active" id="s0">
+            <img class="tour-img-prev" id="s0img" src="" alt="" />
+            <div>
+              <div
+                style="
+                  font-family: var(--px);
+                  font-size: 0.55rem;
+                  letter-spacing: 0.05em;
+                  line-height: 1.8;
+                  margin-bottom: 6px;
+                "
+                id="s0name"
+              ></div>
+              <p
+                style="
+                  font-family: var(--body);
+                  font-weight: 600;
+                  font-size: 0.85rem;
+                  color: var(--ink);
+                  line-height: 1.65;
+                "
+                id="s0desc"
+              ></p>
+            </div>
+            <div class="incl-box">
+              <div class="incl-ttl">INCLUDES</div>
+              <div id="s0incl"></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <div class="px-stars" id="s0stars"></div>
+              <span
+                style="
+                  font-family: var(--px);
+                  font-size: 0.38rem;
+                  color: var(--dim);
+                "
+                id="s0rev"
+              ></span>
+              <span
+                style="
+                  font-family: var(--px);
+                  font-size: 0.38rem;
+                  color: var(--dim);
+                "
+                id="s0dur"
+              ></span>
+            </div>
+          </div>
+
+          <div class="step" id="s1">
+            <div class="field">
+              <label>SELECT DATE</label
+              ><input type="date" id="dateIn" oninput="validateStep()" />
+            </div>
+            <div class="field">
+              <label>NUMBER OF GUESTS</label>
+              <div class="guest-row">
+                <button
+                  class="ctr-btn"
+                  style="background: var(--red); outline-color: #902020"
+                  onclick="chGuests(-1)"
+                >
+                  −
+                </button>
+                <span class="ctr-val" id="guestVal">2</span>
+                <button
+                  class="ctr-btn"
+                  style="background: var(--green); outline-color: var(--gdk)"
+                  onclick="chGuests(1)"
+                >
+                  +
+                </button>
+                <span class="ctr-note" id="guestNote">MAX —</span>
+              </div>
+            </div>
+            <div class="price-box" id="pb1"></div>
+          </div>
+
+          <div class="step" id="s2">
+            <div class="card-vis" id="cardVis">
+              <div class="cv-deco">
+                <div class="cv-sq" style="width: 20px; height: 20px"></div>
+                <div class="cv-sq" style="width: 12px; height: 12px"></div>
+              </div>
+              <div class="cv-num" id="cvNum">•••• •••• •••• ••••</div>
+              <div class="cv-bot">
+                <div>
+                  <div class="cv-fl">HOLDER</div>
+                  <div class="cv-fv" id="cvHolder">YOUR NAME</div>
+                </div>
+                <div>
+                  <div class="cv-fl">EXPIRES</div>
+                  <div class="cv-fv" id="cvExp">MM/YY</div>
+                </div>
+              </div>
+              <div class="cv-brand">VISA</div>
+            </div>
+            <div class="field">
+              <label> CARDHOLDER NAME</label
+              ><input
+                type="text"
+                id="cardHolder"
+                placeholder="As shown on card"
+                oninput="cvHolder.textContent = this.value || 'YOUR NAME'"
+              />
+            </div>
+            <div class="field">
+              <label> CARD NUMBER</label
+              ><input
+                type="text"
+                id="cardNum"
+                placeholder="1234 5678 9012 3456"
+                maxlength="19"
+                oninput="fmtCard(this)"
+              />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label> EXPIRY</label
+                ><input
+                  type="text"
+                  id="cardExp"
+                  placeholder="MM/YY"
+                  maxlength="5"
+                  oninput="fmtExp(this)"
+                />
+              </div>
+              <div class="field">
+                <label> CVV</label
+                ><input
+                  type="password"
+                  id="cardCvv"
+                  placeholder="•••"
+                  maxlength="3"
+                  oninput="this.value = this.value.replace(/\D/g, '')"
+                />
+              </div>
+            </div>
+            <div class="sec-note">🛡 256-BIT SSL SECURE PAYMENT</div>
+            <div class="price-box" id="pb2"></div>
+          </div>
+
+          <div class="step" id="s3">
+            <div class="confirmed">
+              <img src="public/success.png" alt="" width="20" height="20" />
+              <div class="conf-ttl">QUEST COMPLETE!</div>
+              <div class="conf-detail" id="confDetail"></div>
+              <div class="conf-box" id="confBox"></div>
+              <div style="width: 100%">
+                <div class="ref-lbl">BOOKING REF</div>
+                <div class="ref-code" id="refCode"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" id="bookFtr">
+          <button class="pxbtn full" id="ctaBtn" onclick="nextStep()">
+            <span id="ctaTxt">BOOK NOW</span>
+            <span id="ctaSpin" class="spinner hidden"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="tours.js"></script>
+    <script>
+      if (!localStorage.getItem("user_id")) {
+        window.location.replace("landing.html");
+      }
+
+      function signOut() {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("full_name");
+        window.location.replace("landing.html");
+      }
+    </script>
+  </body>
+</html>

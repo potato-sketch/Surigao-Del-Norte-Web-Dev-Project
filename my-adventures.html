@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>NatureTrails 🗺️ My Adventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="tours.css" />
+  </head>
+  <body>
+    <nav>
+      <a
+        href="tours.html"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: var(--cream);
+          border: none;
+          outline: 3px solid var(--brown);
+          box-shadow: 3px 3px 0 var(--brown);
+          font-family: var(--px);
+          font-size: 0.42rem;
+          color: var(--ink);
+          cursor: pointer;
+          letter-spacing: 0.05em;
+          text-decoration: none;
+          transition:
+            transform 0.1s,
+            box-shadow 0.1s;
+        "
+        onmouseover="this.style.transform = 'translate(-2px,-2px)'"
+        onmouseout="this.style.transform = ''"
+        >BACK</a
+      >
+      <div class="nav-brand">NATURE<span>TRAILS</span></div>
+      <div class="nav-tag">MY QUESTS</div>
+    </nav>
+    <div class="px-strip"></div>
+
+    <div class="page">
+      <div
+        style="
+          font-family: var(--px);
+          font-size: 0.38rem;
+          color: var(--dim);
+          letter-spacing: 0.12em;
+          margin-bottom: 10px;
+        "
+      >
+        YOUR TOUR HISTORY
+      </div>
+      <h1
+        style="
+          font-family: var(--px);
+          font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+          color: var(--gdk);
+          letter-spacing: 0.04em;
+          line-height: 1.7;
+          margin-bottom: 20px;
+        "
+      >
+        MY ADVENTURES
+      </h1>
+
+      <div class="stats" id="stats"></div>
+      <div class="filter-tabs" id="filterTabs"></div>
+      <div id="content"></div>
+    </div>
+
+    <div class="modal-bd" id="rateBd" onclick="handleBd(event)">
+      <div class="modal" id="rateModal">
+        <div class="modal-hdr" id="rateHdr">
+          <div class="modal-ttl">RATE ADVENTURE</div>
+          <div class="modal-sub" id="rateTourName"></div>
+          <button class="close-btn" onclick="closeRating()">✕</button>
+        </div>
+        <div class="modal-body" id="rateBody">
+          <div id="rateForm">
+            <p
+              style="
+                font-family: var(--px);
+                font-size: 0.4rem;
+                color: var(--dim);
+                letter-spacing: 0.08em;
+                text-align: center;
+                margin-bottom: 10px;
+              "
+            >
+              HOW WAS YOUR EXPERIENCE?
+            </p>
+            <div class="star-lbl" id="starLbl" style="color: var(--dim)">
+              TAP TO RATE
+            </div>
+            <div class="star-picker" id="starPicker"></div>
+
+            <div class="field" style="margin-top: 4px">
+              <label>► COMMENT (OPTIONAL)</label>
+              <textarea
+                id="rateComment"
+                rows="3"
+                placeholder="Share your adventure story..."
+              ></textarea>
+            </div>
+            <button
+              class="pxbtn"
+              id="submitRtgBtn"
+              style="
+                width: 100%;
+                background: var(--sand);
+                outline-color: var(--blt);
+                box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
+                color: var(--dim);
+                margin-top: 4px;
+              "
+              onclick="submitRating()"
+              disabled
+            >
+              ★ SUBMIT RATING
+            </button>
+          </div>
+
+          <div class="done-screen hidden" id="rateDone">
+            <img src="public/success.png" alt="" width="20" height="20" />
+            <div class="done-text" id="doneText">RATING SAVED!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="my-adventures.js"></script>
+  </body>
+</html>
