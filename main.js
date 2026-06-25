@@ -132,14 +132,113 @@ document.body.appendChild(labelRenderer.domElement);
 const mainScene = document.getElementById("mainScene");
 const showcaseBtn = document.getElementById("showcase-btn");
 const bookingBtn = document.getElementById("booking-btn");
+const loadingScreen = document.getElementById("loadingScreen");
+const loadingPercent = document.getElementById("loadingPercent");
+const loadingBarFill = document.getElementById("loadingBarFill");
+const loadingEnterBtn = document.getElementById("loadingEnterBtn");
 const showcaseCameraPosition = new THREE.Vector3(12, 5.5, 13);
 const showcaseCameraTarget = new THREE.Vector3(0, 0.1, 0);
 const mainSceneTransitionMs = 420;
+const loadingScreenTransitionMs = 420;
+const skipLoadingFromQuery = new URLSearchParams(window.location.search).get("skipLoading") === "1";
+const skipLoadingFromReturn = sessionStorage.getItem("skipMainLoadingOnce") === "1";
+const skipLoadingScreen = skipLoadingFromQuery || skipLoadingFromReturn;
 
 let pendingShowcaseZoom = false;
 let mainSceneHideTimer = null;
 let mainSceneShowTimer = null;
 let sceneTransitionInProgress = false;
+let loadingProgress = 0;
+let loadingReady = false;
+
+window.musicManager?.mountControls({ defaultTrack: "lofi" });
+
+const loadingProgressTimer = window.setInterval(() => {
+  if (loadingReady) return;
+
+  loadingProgress = Math.min(92, loadingProgress + (loadingProgress < 60 ? 8 : 4));
+  if (loadingPercent) {
+    loadingPercent.textContent = `${loadingProgress}%`;
+  }
+
+  if (loadingBarFill) {
+    loadingBarFill.style.width = `${loadingProgress}%`;
+  }
+}, 180);
+
+if (skipLoadingScreen) {
+  loadingReady = true;
+  window.clearInterval(loadingProgressTimer);
+
+  if (skipLoadingFromReturn && mainScene) {
+    mainScene.classList.add("is-returning");
+  }
+
+  if (loadingScreen) {
+    loadingScreen.setAttribute("data-state", "hidden");
+  }
+
+  if (loadingPercent) {
+    loadingPercent.textContent = "100%";
+  }
+
+  if (loadingBarFill) {
+    loadingBarFill.style.width = "100%";
+  }
+
+  if (loadingEnterBtn) {
+    loadingEnterBtn.disabled = false;
+  }
+
+  if (skipLoadingFromReturn) {
+    sessionStorage.removeItem("skipMainLoadingOnce");
+  }
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+if (skipLoadingFromReturn && mainScene) {
+  window.setTimeout(() => {
+    mainScene.classList.remove("is-returning");
+  }, mainSceneTransitionMs);
+}
+
+function hideLoadingScreen() {
+  if (!loadingScreen || loadingScreen.dataset.state === "hidden") return;
+
+  window.musicManager?.playTrack("lofi", { forceEnable: true });
+
+  loadingScreen.setAttribute("data-state", "exiting");
+  window.setTimeout(() => {
+    loadingScreen.setAttribute("data-state", "hidden");
+  }, loadingScreenTransitionMs);
+}
+
+window.__setLoadingReady = function setLoadingReady() {
+  loadingReady = true;
+  window.clearInterval(loadingProgressTimer);
+  loadingProgress = 100;
+
+  if (loadingPercent) {
+    loadingPercent.textContent = "100%";
+  }
+
+  if (loadingBarFill) {
+    loadingBarFill.style.width = "100%";
+  }
+
+  if (loadingScreen && loadingScreen.dataset.state !== "hidden") {
+    loadingScreen.setAttribute("data-state", "ready");
+  }
+
+  if (loadingEnterBtn) {
+    loadingEnterBtn.disabled = false;
+  }
+};
+
+if (loadingEnterBtn) {
+  loadingEnterBtn.addEventListener("click", hideLoadingScreen);
+}
 
 function startIslandShowcaseZoom() {
   cameraTargetPosition.copy(showcaseCameraPosition);
@@ -150,6 +249,8 @@ function startIslandShowcaseZoom() {
 function enterShowcase() {
   if (sceneTransitionInProgress) return;
   sceneTransitionInProgress = true;
+
+  window.musicManager?.playTrack("beach", { forceEnable: true });
 
   if (mainSceneHideTimer) {
     clearTimeout(mainSceneHideTimer);
@@ -182,9 +283,38 @@ function enterShowcase() {
   }
 }
 
+function enterBooking() {
+  if (sceneTransitionInProgress) return;
+  sceneTransitionInProgress = true;
+
+  if (mainSceneHideTimer) {
+    clearTimeout(mainSceneHideTimer);
+    mainSceneHideTimer = null;
+  }
+
+  if (mainSceneShowTimer) {
+    clearTimeout(mainSceneShowTimer);
+    mainSceneShowTimer = null;
+  }
+
+  if (mainScene) {
+    mainScene.classList.add("is-exiting");
+  }
+
+  window.setTimeout(() => {
+    window.location.href = "/landing.html";
+  }, mainSceneTransitionMs);
+}
+
 function returnToMainScene() {
   if (sceneTransitionInProgress) return;
   sceneTransitionInProgress = true;
+
+  if (window.musicManager?.getEnabled()) {
+    window.musicManager.playTrack("lofi");
+  } else {
+    window.musicManager?.setTrackName("lofi");
+  }
 
   if (mainSceneHideTimer) {
     clearTimeout(mainSceneHideTimer);
@@ -224,9 +354,7 @@ if (showcaseBtn) {
 }
 
 if (bookingBtn) {
-  bookingBtn.addEventListener("click", () => {
-    window.location.href = "/landing.html";
-  });
+  bookingBtn.addEventListener("click", enterBooking);
 }
 
 
@@ -341,28 +469,85 @@ let activeSpotMarkerName = null;
 const goFrameTransitionMs = 180;
 let goFrameTransitionTimer = null;
 
+function getMusicSafeBounds() {
+  const controls = document.getElementById("sdnMusicControls");
+  if (!controls) return null;
+
+  const rect = controls.getBoundingClientRect();
+  if (!rect.width || !rect.height) return null;
+
+  return {
+    right: rect.right,
+    bottom: rect.bottom,
+  };
+}
+
+function applyMusicSafeBounds(position, frameWidth, frameHeight, margin) {
+  const safeBounds = getMusicSafeBounds();
+  if (!safeBounds) return position;
+
+  const overlapsMusicArea =
+    position.left < safeBounds.right + margin &&
+    position.top < safeBounds.bottom + margin;
+
+  if (!overlapsMusicArea) return position;
+
+  const pushRightLeft = safeBounds.right + margin;
+  const pushDownTop = safeBounds.bottom + margin;
+  const canPushRight = pushRightLeft <= window.innerWidth - frameWidth - margin;
+  const canPushDown = pushDownTop <= window.innerHeight - frameHeight - margin;
+
+  if (canPushRight) {
+    position.left = pushRightLeft;
+  }
+
+  if (canPushDown) {
+    position.top = pushDownTop;
+  }
+
+  return position;
+}
+
 function positionSpotFrame(markerName) {
   const margin = 14;
   const frameWidth = spotModalElement.offsetWidth || Math.min(420, window.innerWidth - 32);
   const frameHeight = spotModalElement.offsetHeight || 360;
 
   if (markerName === "CaveMarker") {
-    spotModalElement.style.left = `${margin + 80}px`;
-    spotModalElement.style.top = `${margin}px`;
+    const position = applyMusicSafeBounds(
+      { left: margin + 80, top: margin },
+      frameWidth,
+      frameHeight,
+      margin,
+    );
+    spotModalElement.style.left = `${position.left}px`;
+    spotModalElement.style.top = `${position.top}px`;
     spotModalElement.style.right = "auto";
     return;
   }
 
   if (markerName === "BeachMarker") {
-    spotModalElement.style.left = `${margin}px`;
-    spotModalElement.style.top = `${margin}px`;
+    const position = applyMusicSafeBounds(
+      { left: margin, top: margin },
+      frameWidth,
+      frameHeight,
+      margin,
+    );
+    spotModalElement.style.left = `${position.left}px`;
+    spotModalElement.style.top = `${position.top}px`;
     spotModalElement.style.right = "auto";
     return;
   }
 
   if (markerName === "HutMarker") {
-    spotModalElement.style.left = `${margin}px`;
-    spotModalElement.style.top = `${margin}px`;
+    const position = applyMusicSafeBounds(
+      { left: margin, top: margin },
+      frameWidth,
+      frameHeight,
+      margin,
+    );
+    spotModalElement.style.left = `${position.left}px`;
+    spotModalElement.style.top = `${position.top}px`;
     spotModalElement.style.right = "auto";
     return;
   }
@@ -382,15 +567,27 @@ function positionSpotFrame(markerName) {
   }
 
   if (markerName === "RoadMarker") {
-    spotModalElement.style.left = `${margin}px`;
-    spotModalElement.style.top = `${margin}px`;
+    const position = applyMusicSafeBounds(
+      { left: margin, top: margin },
+      frameWidth,
+      frameHeight,
+      margin,
+    );
+    spotModalElement.style.left = `${position.left}px`;
+    spotModalElement.style.top = `${position.top}px`;
     spotModalElement.style.right = "auto";
     return;
   }
 
   if (markerName === "WaterfallMarker") {
-    spotModalElement.style.left = `${margin}px`;
-    spotModalElement.style.top = `${margin}px`;
+    const position = applyMusicSafeBounds(
+      { left: margin, top: margin },
+      frameWidth,
+      frameHeight,
+      margin,
+    );
+    spotModalElement.style.left = `${position.left}px`;
+    spotModalElement.style.top = `${position.top}px`;
     spotModalElement.style.right = "auto";
     return;
   }
@@ -418,6 +615,16 @@ function positionSpotFrame(markerName) {
   if (markerName === "BridgeMarker") {
     left += 240;
   }
+
+  const adjustedPosition = applyMusicSafeBounds(
+    { left, top },
+    frameWidth,
+    frameHeight,
+    margin,
+  );
+
+  left = adjustedPosition.left;
+  top = adjustedPosition.top;
 
   left = Math.min(window.innerWidth - frameWidth - margin, Math.max(margin, left));
   top = Math.min(window.innerHeight - frameHeight - margin, Math.max(margin, top));
@@ -516,9 +723,9 @@ function createBackSceneButton() {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "scene-back-button";
-  button.setAttribute("aria-label", "Back to main scene");
-  button.title = "Back to Main Screen";
-  button.textContent = "← Back to Main Screen";
+  button.setAttribute("aria-label", "Back to main menu");
+  button.title = "Back to Main Menu";
+  button.textContent = "← Back to Main Menu";
 
   button.addEventListener("click", returnToMainScene);
 

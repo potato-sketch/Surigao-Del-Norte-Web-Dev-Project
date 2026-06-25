@@ -2,6 +2,15 @@
 
 header("Content-Type: application/json");
 
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    echo json_encode([
+        "success" => false,
+        "message" => "Method not allowed."
+    ]);
+    exit;
+}
+
 $conn = require __DIR__ . "/../config/db.php";
 
 $fullName = trim($_POST["full_name"] ?? "");
@@ -20,8 +29,25 @@ $check = $conn->prepare(
     "SELECT user_id FROM users WHERE email = ?"
 );
 
+if (!$check) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to prepare signup validation query."
+    ]);
+    exit;
+}
+
 $check->bind_param("s", $email);
-$check->execute();
+
+if (!$check->execute()) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to validate email address."
+    ]);
+    exit;
+}
 
 if ($check->get_result()->num_rows > 0) {
     echo json_encode([
@@ -38,6 +64,15 @@ $stmt = $conn->prepare(
      VALUES(?,?,?)"
 );
 
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to prepare signup query."
+    ]);
+    exit;
+}
+
 $stmt->bind_param(
     "sss",
     $fullName,
@@ -48,5 +83,8 @@ $stmt->bind_param(
 $success = $stmt->execute();
 
 echo json_encode([
-    "success" => $success
+    "success" => $success,
+    "message" => $success
+        ? "Account created successfully."
+        : "Could not create account right now."
 ]);

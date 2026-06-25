@@ -17,6 +17,36 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="pre-render-active">
+    <section
+      id="loadingScreen"
+      class="loading-screen"
+      data-state="loading"
+      aria-label="Loading screen"
+    >
+      <div class="loading-card">
+        <div class="loading-stack">
+          <div class="loading-glow"></div>
+          <div class="loading-island-card">
+            <div class="loading-title">SURIGAO DEL NORTE</div>
+            <div class="loading-subtitle">Preparing the island showcase...</div>
+            <div class="loading-bar-shell" aria-hidden="true">
+              <div id="loadingBarFill" class="loading-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+        <p id="loadingPercent" class="loading-percent">0%</p>
+        <button
+          id="loadingEnterBtn"
+          class="enter-btn"
+          type="button"
+          disabled
+          aria-label="Enter now"
+        >
+          <span class="enter-label">ENTER NOW</span>
+        </button>
+      </div>
+    </section>
+
     <section id="mainScene" class="main-scene" aria-label="Main scene">
       <img
         class="main-scene-bg"
@@ -106,6 +136,7 @@
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       defer
     ></script>
+    <script src="/music-manager.js" defer></script>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
