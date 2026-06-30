@@ -2,15 +2,36 @@
 header("Content-Type: application/json");
 $conn = require __DIR__ . "/../config/db.php";
 
+session_start();
+
+$userId = isset($_SESSION["user_id"]) ? (int)$_SESSION["user_id"] : 0;
+
+if ($userId <= 0) {
+    http_response_code(401);
+    echo json_encode(new stdClass());
+    exit;
+}
+
 $sql = "SELECT
             booking_id,
             rating_value,
             review,
             rated_at
         FROM ratings
+        WHERE user_id = ?
         ORDER BY rated_at DESC";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(new stdClass());
+    exit;
+}
+
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
 
 $ratings = [];
 
@@ -25,5 +46,6 @@ if ($result) {
 }
 
 echo json_encode($ratings);
+$stmt->close();
 $conn->close();
 ?>

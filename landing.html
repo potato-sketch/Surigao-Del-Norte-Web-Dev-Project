@@ -125,14 +125,6 @@
             <div class="px-div-line"></div>
             <div class="px-div-line"></div>
           </div>
-          <button
-            type="button"
-            class="pxbtn pxbtn-yellow"
-            style="width: 100%"
-            onclick="switchTab('signup')"
-          >
-            GET STARTED NOW
-          </button>
           <a href="index.html" class="auth-back-link" onclick="return navigateBackToMainScene(event)">← BACK TO MAIN MENU</a>
         </div>
 
@@ -373,28 +365,28 @@
         if (!name) {
           document.getElementById("signupNameError").textContent =
             "Full name is required";
-          document.getElementById("signupNameError").style.display = "block";
+          document.getElementById("signupNameError").style.display = "flex";
           hasError = true;
         }
 
         if (!email) {
           document.getElementById("signupEmailError").textContent =
             "Email is required";
-          document.getElementById("signupEmailError").style.display = "block";
+          document.getElementById("signupEmailError").style.display = "flex";
           hasError = true;
         }
 
         if (!password) {
           document.getElementById("signupPwError").textContent =
             "Password is required";
-          document.getElementById("signupPwError").style.display = "block";
+          document.getElementById("signupPwError").style.display = "flex";
           hasError = true;
         }
 
         if (!confirm) {
           document.getElementById("confirmPwError").textContent =
             "Confirm password is required";
-          document.getElementById("confirmPwError").style.display = "block";
+          document.getElementById("confirmPwError").style.display = "flex";
           hasError = true;
         }
 
@@ -403,7 +395,7 @@
         if (password !== confirm) {
           document.getElementById("confirmPwError").textContent =
             "Passwords do not match";
-          document.getElementById("confirmPwError").style.display = "block";
+          document.getElementById("confirmPwError").style.display = "flex";
           return;
         }
 
@@ -448,12 +440,12 @@
           } else {
             const emailError = document.getElementById("signupEmailError");
             emailError.textContent = data.message || "Could not create account.";
-            emailError.style.display = "block";
+            emailError.style.display = "flex";
           }
         } catch {
           const emailError = document.getElementById("signupEmailError");
           emailError.textContent = "Could not connect to the server.";
-          emailError.style.display = "block";
+          emailError.style.display = "flex";
         }
       }
 
@@ -483,14 +475,14 @@
         if (!email) {
           document.getElementById("loginEmailError").textContent =
             "Email is required";
-          document.getElementById("loginEmailError").style.display = "block";
+          document.getElementById("loginEmailError").style.display = "flex";
           hasError = true;
         }
 
         if (!password) {
           document.getElementById("loginPwError").textContent =
             "Password is required";
-          document.getElementById("loginPwError").style.display = "block";
+          document.getElementById("loginPwError").style.display = "flex";
           hasError = true;
         }
 
@@ -539,12 +531,12 @@
           } else {
             const pwError = document.getElementById("loginPwError");
             pwError.textContent = data.message || "Invalid credentials.";
-            pwError.style.display = "block";
+            pwError.style.display = "flex";
           }
         } catch {
           const pwError = document.getElementById("loginPwError");
           pwError.textContent = "Could not connect to the server.";
-          pwError.style.display = "block";
+          pwError.style.display = "flex";
         }
       }
 

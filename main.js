@@ -386,7 +386,7 @@ const markerTourOrder = [
 
 const videoSources = {
   cave: "/vids/hagukan%20cave/03D2F7A8-60DA-4BC1-B424-B9100738EE17.mov",
-  beach: "/vids/magpupungko%20rock%20formation/airaandmeagan_TikTokDownloader.com_c6567.mp4",
+  beach: "/vids/alegria%20beach/AFC2AECF-E004-4F37-B368-4D3E030A3A0D.mov",
   hut: "/vids/corregidor%20island/A7E31CC2-0684-40D4-B0A6-4D73D5C05B19.mov",
   mountain: "/vids/red%20mountain/9FC4AD3C-9123-475A-97AE-44236B49869F.mov",
   cove: "/vids/sohoton%20cove/AQNm3-Da0XREmmpALQDJfBs5AiD8YRLzbuaotPGGHh08jRPHqJwhqMe5pTtiUls-Ov28L3vmHSlqpLzxd84GYm9o_4_W_wgEWEzCk6OUXAsxyQ.mp4",
@@ -430,7 +430,7 @@ const spotDetails = {
     image: "https://via.placeholder.com/280x160?text=Mountain",
   },
   CoveMarker: {
-    title: "Sotohon Cove",
+    title: "Sohoton Cove",
     description: "A quiet cove sheltered by cliffs and calm water.",
     longDescription:
       "Discover the secluded cove, a peaceful spot tucked between cliffs with gentle water and shade.",

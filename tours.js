@@ -318,10 +318,10 @@ async function renderAll() {
                 <p class="card-desc">${t.desc}</p>
                 <div class="px-stars">${starsHTML(stats.count ? stats.avg : 0)}</div>
                 <div class="chips">
-                  <div class="chip">⏱ ${t.duration}</div>
-                  <div class="chip">👥 ${t.groupSize} pax</div>
-                  <div class="chip">⭐ ${avgTxt}</div>
-                  <div class="chip">🗳️ ${rateTxt}</div>
+                  <div class="chip">${t.duration}</div>
+                  <div class="chip">${t.groupSize} pax</div>
+                  <div class="chip">${avgTxt}</div>
+                  <div class="chip">${rateTxt}</div>
                 </div>
                 <div class="divider-dash"></div>
                 <div class="card-footer">

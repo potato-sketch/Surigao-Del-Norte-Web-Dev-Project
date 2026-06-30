@@ -14,11 +14,12 @@
   </head>
   <body>
     <nav>
-      <div class="nav-brand">Surigao<span> Del Norte</span></div>
+      <div class="nav-brand">EXPLORE <span> SURIGAO DEL NORTE</span></div>
       <a
         href="my-adventures.html"
         id="myQuestsBtn"
         style="
+          margin-left: auto;
           padding: 6px 12px;
           background: var(--yellow);
           border: none;
@@ -32,19 +33,19 @@
           text-decoration: none;
           transition: transform 0.1s;
         "
-        onclick="return navigateWithTransition(event, 'my-adventures.html')"
         >MY QUESTS</a
       >
       <button
         id="signOutBtn"
         style="
-          padding: 6px 12px;
+          margin-left: 10px;
+          padding: 6px 10px;
           background: #7a5230;
           border: none;
           outline: 3px solid #3a1a08;
           box-shadow: 3px 3px 0 #3a1a08;
           font-family: var(--px);
-          font-size: 0.38rem;
+          font-size: 0.32rem;
           color: #fff;
           cursor: pointer;
           letter-spacing: 0.05em;
@@ -286,6 +287,14 @@
       let pageTransitionInProgress = false;
 
       window.musicManager?.mountControls({ defaultTrack: "lofi" });
+
+      const musicControls = document.getElementById("sdnMusicControls");
+      if (musicControls) {
+        musicControls.style.top = "auto";
+        musicControls.style.right = "auto";
+        musicControls.style.left = window.innerWidth <= 768 ? "10px" : "12px";
+        musicControls.style.bottom = "10px";
+      }
 
       if (!localStorage.getItem("user_id")) {
         window.location.replace("landing.html");

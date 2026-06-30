@@ -39,8 +39,30 @@
         onmouseout="this.style.transform = ''"
         >BACK</a
       >
-      <div class="nav-brand">Surigao<span> Del Norte</span></div>
+      <div class="nav-brand">EXPLORE <span> SURIGAO DEL NORTE</span></div>
       <div class="nav-tag">MY QUESTS</div>
+      <button
+        id="signOutBtn"
+        style="
+          margin-left: 10px;
+          padding: 6px 10px;
+          background: #7a5230;
+          border: none;
+          outline: 3px solid #3a1a08;
+          box-shadow: 3px 3px 0 #3a1a08;
+          font-family: var(--px);
+          font-size: 0.32rem;
+          color: #fff;
+          cursor: pointer;
+          letter-spacing: 0.05em;
+          transition: transform 0.1s;
+        "
+        onmouseover="this.style.transform='translate(-2px,-2px)'; this.style.boxShadow='5px 5px 0 #3a1a08';"
+        onmouseout="this.style.transform=''; this.style.boxShadow='3px 3px 0 #3a1a08';"
+        onclick="signOut()"
+      >
+        SIGN OUT
+      </button>
     </nav>
     <div class="px-strip"></div>
 
@@ -137,6 +159,20 @@
     <script src="/music-manager.js"></script>
     <script>
       window.musicManager?.mountControls({ defaultTrack: "lofi" });
+
+      const musicControls = document.getElementById("sdnMusicControls");
+      if (musicControls) {
+        musicControls.style.top = "auto";
+        musicControls.style.right = "auto";
+        musicControls.style.left = window.innerWidth <= 768 ? "10px" : "12px";
+        musicControls.style.bottom = "10px";
+      }
+
+      function signOut() {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("full_name");
+        window.location.replace("landing.html?signedout=1");
+      }
     </script>
     <script src="my-adventures.js"></script>
   </body>

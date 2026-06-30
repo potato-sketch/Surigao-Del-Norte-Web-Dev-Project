@@ -214,6 +214,12 @@ async function saveRating(bookingId, stars, comment) {
   });
 }
 
+async function cancelBookingRequest(bookingId) {
+  return apiPostForm("api/bookings_delete.php", {
+    bookingId,
+  });
+}
+
 function isFinished(date) {
   if (!date) return false;
   const today = new Date();
@@ -377,6 +383,7 @@ function cardHTML(b, ratings, i, tourStats = {}) {
       <div class="upcoming-lbl">🌿 UPCOMING ADVENTURE</div>
       <p class="upcoming-p">Get ready! Your guide will contact you 24 hours before your tour date.</p>
       <div class="upcoming-note">RATING AVAILABLE AFTER TOUR</div>
+      <button class="pxbtn sm" style="align-self:flex-start;background:#c95d4f;outline-color:#7f2e26;box-shadow:3px 3px 0 #7f2e26;color:#fff;margin-top:6px" onclick="cancelBooking(${b.bookingId})">CANCEL BOOKING</button>
     </div>`;
   }
 
@@ -413,6 +420,23 @@ function cardHTML(b, ratings, i, tourStats = {}) {
 function setFilter(f) {
   activeFilter = f;
   render();
+}
+
+async function cancelBooking(bookingId) {
+  const confirmed = window.confirm(
+    "Cancel this booking? This will permanently remove it from your adventure list.",
+  );
+
+  if (!confirmed) return;
+
+  const result = await cancelBookingRequest(bookingId);
+
+  if (!result?.success) {
+    alert(result?.message || "Unable to cancel this booking right now.");
+    return;
+  }
+
+  await render();
 }
 
 async function openRating(bookingId) {

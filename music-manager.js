@@ -53,6 +53,7 @@
     const resolvedTrack = TRACKS[trackName] ? trackName : defaultTrack;
     const audio = getAudio();
     audio.volume = DEFAULT_VOLUME;
+    audio.muted = false;
 
     setTrackName(resolvedTrack);
 
@@ -80,15 +81,14 @@
 
   function pause() {
     const audio = getAudio();
+    audio.muted = true;
     audio.pause();
     setEnabled(false);
     syncControls();
   }
 
   function toggle(defaultTrack = "lofi") {
-    const audio = getAudio();
-
-    if (getEnabled() && !audio.paused) {
+    if (getEnabled()) {
       pause();
       return;
     }

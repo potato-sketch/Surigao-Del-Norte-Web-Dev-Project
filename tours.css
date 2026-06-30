@@ -96,6 +96,10 @@ nav {
 }
 
 .nav-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
   font-family: var(--px);
   font-size: 0.65rem;
   color: var(--cream);
@@ -1116,6 +1120,10 @@ nav {
 }
 
 .nav-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
   font-family: var(--px);
   font-size: 0.65rem;
   color: var(--cream);
@@ -1127,6 +1135,8 @@ nav {
 }
 
 .nav-tag {
+  margin-left: auto;
+  margin-left: auto;
   padding: 5px 10px;
   background: var(--yellow);
   outline: 2px solid var(--brown);

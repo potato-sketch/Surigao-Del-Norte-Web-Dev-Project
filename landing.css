@@ -490,6 +490,9 @@ body.page-exiting .success-popup {
   gap: 6px;
 }
 .field label {
+  display: flex;
+  flex-direction: row;
+  align-items: left;
   font-family: var(--px);
   font-size: 0.36rem;
   color: var(--gdk);
@@ -697,8 +700,10 @@ body.page-exiting .success-popup {
   box-shadow: 3px 3px 0 #8b1e1e !important;
 }
 
-.field-error {
-  display: none;
+.field-error  {
+  display: flex;
+  flex-direction: row;
+  align-items: left;
   margin-top: 6px;
   color: #d62828;
   font-size: 0.72rem;
